@@ -7,7 +7,7 @@ import cors from "cors";
 import helmet from "helmet";
 import rateLimiter from "express-rate-limit";
 import { z } from "zod";
-import winston from 'winston';
+import winston from "winston";
 import { connectDatabaseAsync } from "./database/conn-db";
 
 connectDatabaseAsync();

@@ -178,7 +178,7 @@ export interface IMarginCall {
   marginCallStatus?: MarginCallStatuses;
   marginCallIds: ObjectId[]; // History links keep small
   isTradingRestricted: boolean; // Block new orders from being placed when true
-  isWithdrawalRestricted: boolean;
+  isWithdrawalRestricted: boolean; // Is the user's withdrawal restricted (cannot place any withdraw orders)
 }
 
 export interface IAddress {
@@ -248,7 +248,8 @@ export const TwoFactorSchema = new mongoose.Schema({
   backupCodesHash: {
     type: [String],
     select: false,
-  },
+  }
+
 });
 
 export const UserSchema = new mongoose.Schema<IUser>(
@@ -417,6 +418,8 @@ export const UserSchema = new mongoose.Schema<IUser>(
       type: Date,
       default: Date.now,
     },
+
+    
 
     isNotificationsMuted: { type: Boolean, default: false },
     isSuspiciousFlagged: { type: Boolean, default: false },
