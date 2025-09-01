@@ -306,7 +306,6 @@ export const UserSchema = new mongoose.Schema<IUser>(
     profilePicture: {
       type: String,
       default: "",
-      required: [true, "Please upload the users profile picture"],
     },
 
     role: {

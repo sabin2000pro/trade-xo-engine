@@ -6,7 +6,7 @@ import hpp from "hpp";
 import cors from "cors";
 import helmet from "helmet";
 import rateLimiter from "express-rate-limit";
-import { z } from "zod";
+import { z } from "zod"; // Used for Validation
 import winston from "winston";
 import { connectDatabaseAsync } from "./database/conn-db";
 
