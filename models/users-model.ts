@@ -178,7 +178,7 @@ export interface IMarginCall {
   marginCallStatus?: MarginCallStatuses;
   marginCallIds: ObjectId[]; // History links keep small
   isTradingRestricted: boolean; // Block new orders from being placed when true
-  isWithdrawalRestricted: boolean;
+  isWithdrawalRestricted: boolean; // Is the user's withdrawal restricted (cannot place any withdraw orders)
 }
 
 export interface IAddress {
@@ -248,7 +248,8 @@ export const TwoFactorSchema = new mongoose.Schema({
   backupCodesHash: {
     type: [String],
     select: false,
-  },
+  }
+
 });
 
 export const UserSchema = new mongoose.Schema<IUser>(
@@ -281,8 +282,7 @@ export const UserSchema = new mongoose.Schema<IUser>(
 
     password: {
       type: String,
-      required: [true, "Please specify your passowrd"],
-      select: false,
+      required: [true, "Please specify a valid password"],
     },
 
     address: { type: AddressSchema },
@@ -443,28 +443,32 @@ UserSchema.pre("save", async function (next) {
     return next();
   }
 
+  const SALT_ROUNDS = 12
+  const PASSWORD_SALT = await bcrypt.genSalt(SALT_ROUNDS);
+  this.password = await bcrypt.hash(this.password!, PASSWORD_SALT) as string;
+
   return next();
 });
 
-UserSchema.virtual("yieldPositions", {
-  ref: "YieldPosition",
-  localField: "_id",
-  foreignField: "userId",
-});
+// UserSchema.virtual("yieldPositions", {
+//   ref: "YieldPosition",
+//   localField: "_id",
+//   foreignField: "userId",
+// });
 
-UserSchema.virtual("yieldDeposits", {
-  ref: "YieldDeposit",
-  localField: "_id",
-  foreignField: "userId",
-  justOne: false,
-});
+// UserSchema.virtual("yieldDeposits", {
+//   ref: "YieldDeposit",
+//   localField: "_id",
+//   foreignField: "userId",
+//   justOne: false,
+// });
 
-UserSchema.virtual("yieldRedemptions", {
-  ref: "YieldRedemption",
-  localField: "_id",
-  foreignField: "userId",
-  justOne: false,
-});
+// UserSchema.virtual("yieldRedemptions", {
+//   ref: "YieldRedemption",
+//   localField: "_id",
+//   foreignField: "userId",
+//   justOne: false,
+// });
 
 UserSchema.methods.compareLoginPasswords = async function (
   enteredPassword: string
