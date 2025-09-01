@@ -282,8 +282,7 @@ export const UserSchema = new mongoose.Schema<IUser>(
 
     password: {
       type: String,
-      required: [true, "Please specify your passowrd"],
-      select: false,
+      required: [true, "Please specify a valid password"],
     },
 
     address: { type: AddressSchema },
@@ -419,8 +418,6 @@ export const UserSchema = new mongoose.Schema<IUser>(
       default: Date.now,
     },
 
-    
-
     isNotificationsMuted: { type: Boolean, default: false },
     isSuspiciousFlagged: { type: Boolean, default: false },
     isTermsAccepted: { type: Boolean, default: false },
@@ -446,28 +443,32 @@ UserSchema.pre("save", async function (next) {
     return next();
   }
 
+  const SALT_ROUNDS = 12
+  const PASSWORD_SALT = await bcrypt.genSalt(SALT_ROUNDS);
+  this.password = await bcrypt.hash(this.password!, PASSWORD_SALT) as string;
+
   return next();
 });
 
-UserSchema.virtual("yieldPositions", {
-  ref: "YieldPosition",
-  localField: "_id",
-  foreignField: "userId",
-});
+// UserSchema.virtual("yieldPositions", {
+//   ref: "YieldPosition",
+//   localField: "_id",
+//   foreignField: "userId",
+// });
 
-UserSchema.virtual("yieldDeposits", {
-  ref: "YieldDeposit",
-  localField: "_id",
-  foreignField: "userId",
-  justOne: false,
-});
+// UserSchema.virtual("yieldDeposits", {
+//   ref: "YieldDeposit",
+//   localField: "_id",
+//   foreignField: "userId",
+//   justOne: false,
+// });
 
-UserSchema.virtual("yieldRedemptions", {
-  ref: "YieldRedemption",
-  localField: "_id",
-  foreignField: "userId",
-  justOne: false,
-});
+// UserSchema.virtual("yieldRedemptions", {
+//   ref: "YieldRedemption",
+//   localField: "_id",
+//   foreignField: "userId",
+//   justOne: false,
+// });
 
 UserSchema.methods.compareLoginPasswords = async function (
   enteredPassword: string

@@ -1,14 +1,22 @@
 import { NextFunction, Request, Response } from "express";
 import expressAsyncHandler from "express-async-handler";
+import User from "../models/users-model";
 
 export const registerUserAsync = expressAsyncHandler(async (
   request: Request,
   response: Response,
-  next: NextFunction
+  next?: NextFunction
 ): Promise<any> => {
   const { email, username, password } = request.body;
 
-  return response.status(200).json({success: true, message: 'Register User Endpoint', data: {} })
+  if(!email || !username || !password) {
+    return response.status(400).json({success: false, message: 'Please provide a valid e-mail / username or password'})
+  }
+
+  const createdUser = await User.create({email, username, password});
+  await createdUser.save();
+
+  return response.status(200).json({success: true, message: 'Registered Successfully', data: createdUser })
 })
 
 export const loginUserAsync = expressAsyncHandler(async (request: Request, response: Response, next: NextFunction): Promise<any> => {
