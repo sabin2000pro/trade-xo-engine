@@ -1,4 +1,4 @@
-Position Status Union Values: 
+Position Statuses: 
 - Open
 - Closed
 - Frozen
@@ -37,8 +37,13 @@ Wallets are one of the most important core entities in any trading system becaus
 
 A user can have multiple wallets -> One per currency / network and therefore the relationship is: User -> Wallets (1:M)
 
-Wallet API - Controllers
+Wallet Domain Entity - API Controllers
 
 1. Create New Wallet (POST)
-
-# trade-xo-engine
+2. Get All Wallets
+3. Get Wallet By ID
+4. Update Wallet By ID Async
+5. Delete Wallet By ID Async
+6. Delete All Wallets By ID Async
+7. Freeze Wallet Async
+8. Unfreeze Wallet Async
