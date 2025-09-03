@@ -5,6 +5,15 @@ Position Statuses:
 - Liquidated
 - Pending Settlement
 
+Order Statuses:
+- Pending
+- Fulfilled
+- Cancelled
+- Completed
+
+Transaction Statuses:
+
+
 Margin Calls Notes / Data Model Fields
 
 Purpose: Capture why a margin call happened, how much the shortfall is,
@@ -36,6 +45,16 @@ Wallets are one of the most important core entities in any trading system becaus
 5. Funding Wallet: Used for P2P lending / borrowing (funding markets). It is used to move assets here to earn funding interest or provide liquidity. Bitfines has a Funding Wallet distinct from a Trading Wallet.
 
 A user can have multiple wallets -> One per currency / network and therefore the relationship is: User -> Wallets (1:M)
+
+Authentication Domain Entity - API Controllers
+- Register User Async
+- Login User Async
+- Forgot Password Async
+- Reset Password Async
+- Logout Async
+- Send E-mail Verification Async
+- Resend E-mail Verification Async
+- Change Password
 
 Wallet Domain Entity - API Controllers
 
