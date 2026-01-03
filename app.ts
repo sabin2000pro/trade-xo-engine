@@ -6,8 +6,6 @@ import hpp from "hpp";
 import cors from "cors";
 import helmet from "helmet";
 import rateLimiter from "express-rate-limit";
-import { z } from "zod";
-import winston from "winston";
 import { connectDatabaseAsync } from "./database/conn-db";
 
 connectDatabaseAsync();
@@ -38,7 +36,7 @@ app.use(
   })
 );
 
-app.set("trust proxy", 1); // Used for load balancing
+app.set("trust proxy", 1);
 
 app.use(helmet());
 
@@ -48,14 +46,8 @@ app.get("/", (request: Request, response: Response, next: NextFunction) => {
     .json({ success: true, message: "Root Route - Trading XO" });
 });
 
-app.get("/healthz", (_req: Request, res: Response) =>
-  res.status(200).json({ ok: true })
-);
-app.get("/readyz", (_req: any, res: Response) =>
-  res.status(200).json({ ready: true })
-);
-
 const server = app.listen(port, (error) => {
+
   if (!error) {
     return console.log(
       `Trade XO System listening for HTTP requests on port ${port} in mode ${devMode}`

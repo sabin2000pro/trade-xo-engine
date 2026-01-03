@@ -2,6 +2,7 @@ import mongoose, { ObjectId } from "mongoose";
 import bcrypt from "bcryptjs";
 import jwt from "jsonwebtoken";
 import crypto from "crypto";
+import { IUser } from "../interfaces/users-interface";
 
 // User Roles (RBAC) - Canonical typed permission catalog
 export type UserRole = "USER" | "ADMIN" | "OPS" | "COMPLIANCE" | "SUPPORT";
@@ -58,100 +59,11 @@ export const USER_PERMISSIONS = [
 
   // ===== User Transactions RBAC =====
 ];
-
-export type UserStatus = "ACTIVE" | "PENDING" | "FROZEN" | "CLOSED";
 export type KycStatus = "UNVERIFIED" | "PENDING" | "VERIFIED" | "REJECTED";
 export type ITwoFactorMethodTypes = "TOTP" | "SMS";
 export type MarginCallStatuses = "OPEN" | "RESOLVED" | "LIQUIDATED";
 export type KycDocType = "ID_CARD" | "PASSPORT" | "DRIVING_LICENSE";
 
-export type PositionStatus =
-  | "OPEN"
-  | "CLOSED"
-  | "FROZEN"
-  | "PENDING_SETTLEMENT"
-  | "LIQUIDATING"
-  | "PARTIALLY_CLOSED"
-  | "ROLLED_OVER"
-  | "TRANSFER_PENDING"
-  | "ERROR"
-  | "ARCHIVED";
-
-export type AccountLevel =
-  | "BRONZE"
-  | "SILVER"
-  | "GOLD"
-  | "PLATINUM"
-  | "DIAMOND";
-
-export interface IApiKey {
-  label?: string;
-  keyPrefix: string;
-  keyHash: string;
-  scopes: string[];
-  lastUsedAt?: Date | null;
-  createdAt: Date;
-  expiresAt?: Date | null;
-  revokedAt?: Date | null;
-}
-
-export interface IActiveSession {
-  sessionId: string;
-  createdAt: Date;
-  lastSeenAt: Date;
-  ip: string;
-  userAgent?: string;
-  locationHint?: string;
-}
-
-export interface IUser {
-  accounts: mongoose.Schema.Types.ObjectId[]; // The accounts that belong to the specified user
-  wallets: mongoose.Schema.Types.ObjectId[]; // The wallets that the user has
-  username: string | null; // Username of the user
-  email: string | null; // E-mail of the user
-  password: string | null; // Password of the user
-  address: IAddress | null;
-  profilePicture?: string | null;
-  emailLower: string | null;
-  dateOfBirth: Date | null;
-  lastLoginAt?: Date | null;
-  preferredLanguage: string | null;
-  timeZone: string;
-  lastLoginIpAddress: string; // Helps with Fraud Detection,
-  failedLoginAttempts: number;
-  loginCount: number;
-  depositsCount: number;
-  tradesCount: number;
-  withdrawalsCount: number;
-  totalDepositAmount: number;
-  totalWithdrawalAmount: number;
-  openPositionsCount: number;
-  createdAt?: Date | null;
-  updatedAt?: Date | null;
-  deletedAt?: Date | null;
-  role: UserRole;
-  userStatus: UserStatus;
-  kycStatus: KycStatus;
-  accountLevel: AccountLevel;
-  isBanned: boolean;
-  isPhoneVerified: boolean;
-  isTwoFactorMandatory: boolean;
-  isDemoAccount: boolean;
-  isDepositsAllowed: boolean;
-  isNotificationsMuted: boolean;
-  isTradingEnabled: boolean;
-  isTermsAccepted: boolean;
-  isSuspiciousFlagged: boolean;
-  isAccountLocked: boolean;
-  isMarginCalled: boolean;
-  isMarginCallResolved: boolean;
-  isProfileComplete: boolean;
-  emailVerifiedAt?: Date | null;
-  marginCalledAt?: Date | null;
-  marginCallResolvedAt?: Date | null;
-  marginDeficitAmount: Number;
-  marginCallDeadline: Date;
-}
 
 export interface UserDocument extends IUser, Document {
   compareLoginPasswords(enteredPassword: string): Promise<boolean>;
@@ -172,8 +84,8 @@ export interface ITwoFactorSchema {
 }
 
 export interface IMarginCall {
-  isMarginCalled: boolean;
-  marginCalledAt?: Date | null;
+  isMarginCalled: boolean; // Determines if the user has been margin called
+  marginCalledAt?: Date | null; // The date at which the user potentially has been margin called
   marginDeficitAmount?: number;
   marginCallStatus?: MarginCallStatuses;
   marginCallIds: ObjectId[]; // History links keep small
@@ -225,12 +137,14 @@ export const AddressSchema = new mongoose.Schema<IAddress>({
 });
 
 export const NotificationPrefsSchema =
+
   new mongoose.Schema<INotificationPreferences>(
     {
       email: { type: Boolean, default: true },
       sms: { type: Boolean, default: false },
       inApp: { type: Boolean, default: true },
     },
+
     { _id: false }
   );
 
@@ -254,11 +168,14 @@ export const TwoFactorSchema = new mongoose.Schema({
 
 export const UserSchema = new mongoose.Schema<IUser>(
   {
+
     accounts: [
       {
         type: mongoose.Schema.Types.ObjectId,
         ref: "Account",
+        default: []
       },
+
     ],
 
     wallets: [
@@ -418,10 +335,24 @@ export const UserSchema = new mongoose.Schema<IUser>(
       default: Date.now,
     },
 
-    isNotificationsMuted: { type: Boolean, default: false },
-    isSuspiciousFlagged: { type: Boolean, default: false },
-    isTermsAccepted: { type: Boolean, default: false },
+    isNotificationsMuted: {
+        type: Boolean,
+        default: false
+    },
+
+    isSuspiciousFlagged: {
+        type: Boolean,
+        default: false
+    },
+
+    isTermsAccepted: {
+       type: Boolean,
+       default: false
+    }
+
   },
+
+
   {
     timestamps: true,
 
