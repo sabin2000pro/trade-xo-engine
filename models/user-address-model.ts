@@ -2,12 +2,20 @@ import mongoose from "mongoose";
 import { IAddress } from "../interfaces/address-interface";
 
 export const AddressSchema = new mongoose.Schema<IAddress>({
-  line1: { type: String },
-  line2: { type: String },
+
+  line1: {
+    type: String,
+    default: ''
+  },
+
+  line2: {
+    type: String,
+    default: ''
+  },
 
   city: {
     type: String,
-    required: [true, "Please specify the users city"],
+    required: [true, "Please specify the city that the user resides in"],
     default: "",
   },
 
@@ -30,9 +38,7 @@ export const AddressSchema = new mongoose.Schema<IAddress>({
     type: String,
     default: "",
 
-    required: [
-      true,
-      "Please provide the country code for the country of residence",
+    required: [true,"Please provide the country code for the country of residence",
     ],
 
   },

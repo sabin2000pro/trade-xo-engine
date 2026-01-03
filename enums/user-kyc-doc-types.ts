@@ -1,0 +1,5 @@
+export enum KycDocType {
+  ID_CARD = "ID_CARD",
+  PASSPORT = "PASSPORT",
+  DRIVING_LICENSE = "DRIVING_LICENSE"
+}

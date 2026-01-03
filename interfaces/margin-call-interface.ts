@@ -1,5 +1,5 @@
 import { ObjectId } from "mongoose";
-import { MarginCallStatuses } from "../models/users-model";
+import { MarginCallStatuses } from "../enums/margin-calls";
 
 export interface IMarginCall {
     isMarginCalled: boolean; // Determines if the user has been margin called

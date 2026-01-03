@@ -5,15 +5,9 @@ import crypto from "crypto";
 import { IUser } from "../interfaces/users-interface";
 import { AddressSchema } from "./user-address-model";
 import { AccountLevels } from "../enums/account-levels";
-
-// User Roles (RBAC) - Canonical typed permission catalog
-
-export enum ITwoFactorMethodTypes {
-  TOTP = "TOTP",
-  SMS = "SMS"
-}
-
-export type KycDocType = "ID_CARD" | "PASSPORT" | "DRIVING_LICENSE";
+import { KycStatus } from "../enums/user-kyc-statuses";
+import { UserRole } from "../enums/user-roles";
+import { UserStatus } from "../enums/user-status";
 
 
 export interface UserDocument extends IUser, Document {
@@ -26,7 +20,7 @@ export const UserSchema = new mongoose.Schema<IUser>(
 
   {
 
-    accounts: [
+    accounts: [ // The Accounts that the User has created
       {
         type: mongoose.Schema.Types.ObjectId,
         ref: "Account",
@@ -35,7 +29,7 @@ export const UserSchema = new mongoose.Schema<IUser>(
 
     ],
 
-    wallets: [
+    wallets: [ // The wallet IDs which correspond to a user
 
       {
         type: mongoose.Schema.Types.ObjectId,
@@ -56,12 +50,6 @@ export const UserSchema = new mongoose.Schema<IUser>(
       required: [true, "Please specify a valid e-mail address"],
     },
 
-    emailLower: {
-      type: String,
-      required: false,
-      default: ''
-    },
-
     password: { // Password of the user
       type: String,
       required: [true, "Please specify a valid password"],
@@ -71,47 +59,104 @@ export const UserSchema = new mongoose.Schema<IUser>(
       type: AddressSchema
     },
 
-    dateOfBirth: {
-      type: Date,
-      default: Date.now,
-      required: [true, "Please provide a valid date of birth"],
-    },
-
-    lastLoginAt: {
-      type: Date,
-      default: Date.now,
-    },
-
-    createdAt: {
-      type: Date,
-      default: Date.now,
-    },
-
     profilePicture: {
       type: String,
       default: "",
       required: [true, "Please upload the users profile picture"],
     },
 
+    emailLower: { // User's E-mail address in lowercase format
+      type: String,
+      required: false,
+      default: ''
+    },
+
+    dateOfBirth: {
+      type: Date,
+      default: Date.now,
+      required: [true, "Please provide a valid date of birth"],
+    },
+
+    lastLoginAt: { // The date at which the user was last logged into the platform at
+      type: Date,
+      default: Date.now,
+    },
+
+    preferredLanguage: {
+      type: String,
+      default: '',
+      required: false
+    },
+
+    timeZone: {
+      type: String,
+      default: '',
+      required: false
+    },
+
+    lastLoginIpAddress: {
+      type: String,
+      default: null,
+      required: false
+    },
+
+    failedLoginAttempts: {
+      type: Number,
+      default: 0,
+    },
+
+    loginCount: {
+      type: Number,
+      default: 0,
+      required: false
+    },
+
+    // Dashboard Purpose Counters
+    depositsCount: {
+      type: Number,
+      default: 0,
+      required: false
+    },
+
+    tradesCount: {
+      type: Number,
+      default: 0,
+      required: false
+    },
+
+    withdrawalsCount: {
+      type: Number,
+      default: 0,
+      required: false
+    },
+
+    openPositionsCount: {
+      type: Number,
+      default: 0,
+      required: false
+    },
+
+    createdAt: { // The date at which the User was created at
+      type: Date,
+      default: Date.now,
+    },
+
     role: {
       type: String,
-      default: "USER",
-      enum: ["USER", "ADMIN", "OPS", "COMPLIANCE", "SUPPORT"],
-      index: true,
+      default: UserRole.User,
+      enum: UserRole
     },
 
     userStatus: {
       type: String,
-      enum: ["ACTIVE", "PENDING", "FROZEN", "CLOSED"],
-      default: "ACTIVE",
-      index: true,
+      enum: UserStatus,
+      default: UserStatus.Active,
     },
 
     kycStatus: {
       type: String,
-      enum: ["UNVERIFIED", "PENDING", "VERIFIED", "REJECTED"],
-      default: "UNVERIFIED",
-      index: true,
+      enum: Object.values(KycStatus),
+      default: KycStatus.Unverified,
     },
 
     accountLevel: {
@@ -120,18 +165,6 @@ export const UserSchema = new mongoose.Schema<IUser>(
       default: AccountLevels.Bronze,
       required: [true, 'Please specify the account level you want to assign this User']
     },
-
-    failedLoginAttempts: {
-      type: Number,
-      default: 0,
-    },
-
-    updatedAt: {
-      type: Date,
-      default: Date.now,
-    },
-
-    deletedAt: { type: Date },
 
     isBanned: {
       type: Boolean,
@@ -151,6 +184,16 @@ export const UserSchema = new mongoose.Schema<IUser>(
     isDemoAccount: {
       type: Boolean,
       default: false,
+    },
+
+    updatedAt: {
+      type: Date,
+      default: Date.now,
+    },
+
+    deletedAt: {
+      type: Date,
+      default: Date.now
     },
 
     isTradingEnabled: {
@@ -196,6 +239,7 @@ export const UserSchema = new mongoose.Schema<IUser>(
     isMarginCallResolved: {
       type: Boolean,
       default: false,
+      required: false
     },
 
     marginCalledAt: {
@@ -216,7 +260,14 @@ export const UserSchema = new mongoose.Schema<IUser>(
     isTermsAccepted: {
        type: Boolean,
        default: false
-    }
+    },
+
+    emailVerifiedAt: {
+      type: Date,
+      default: Date.now
+    },
+
+
 
   },
 

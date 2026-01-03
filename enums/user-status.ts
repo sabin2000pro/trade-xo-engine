@@ -1,1 +1,6 @@
-export type UserStatus = "ACTIVE" | "PENDING" | "FROZEN" | "CLOSED";
+export enum UserStatus {
+    Active = "Active",
+    Pending = "Pending",
+    Frozen = "Frozen",
+    Closed = "Closed"
+}
