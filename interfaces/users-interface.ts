@@ -1,7 +1,9 @@
 import mongoose from "mongoose";
-import { IAddress, KycStatus, UserRole } from "../models/users-model";
-import { UserStatus } from "../types/user-status";
-import { AccountLevel } from "../types/account-levels";
+import { KycStatus } from "../enums/user-kyc-statuses";
+import { UserRole } from "../enums/user-roles";
+import { IAddress } from "./address-interface";
+import { UserStatus } from "../enums/user-status";
+import { AccountLevels } from "../enums/account-levels";
 
 export interface IUser {
   accounts: mongoose.Schema.Types.ObjectId[]; // The accounts that belong to the specified user
@@ -25,13 +27,13 @@ export interface IUser {
   totalDepositAmount: number;
   totalWithdrawalAmount: number;
   openPositionsCount: number;
-  createdAt?: Date | null;
+  createdAt?: Date | null; // The date at which the user was created at
   updatedAt?: Date | null;
   deletedAt?: Date | null;
   role: UserRole;
   userStatus: UserStatus;
   kycStatus: KycStatus;
-  accountLevel: AccountLevel;
+  accountLevel: AccountLevels;
   isBanned: boolean;
   isPhoneVerified: boolean;
   isTwoFactorMandatory: boolean;
@@ -57,8 +59,12 @@ export interface ICreateUserInterface {
   email: string
   password: string
   address: string
+  accountLevel: string
 }
 
 export interface IUpdateUserInterface {
-
+  username: string
+  email: string
+  password: string
+  address: string
 }

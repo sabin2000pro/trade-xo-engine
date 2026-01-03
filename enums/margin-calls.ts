@@ -1,6 +1,7 @@
-export enum MarginCalls {
+export enum MarginCallStatuses {
     None = "None",
     Warning = "Warning",
-    MarginCallIssued = "MarginCallIssued",
-    PendingAction = "PendingAction"
+    MarginCallIssued = "MarginCallIsued",
+    PendingAction = "PendingAction",
+    Resolved = "Resolved"
 }

@@ -1,16 +1,18 @@
-import mongoose, { ObjectId } from "mongoose";
+import mongoose from "mongoose";
 import bcrypt from "bcryptjs";
 import jwt from "jsonwebtoken";
 import crypto from "crypto";
 import { IUser } from "../interfaces/users-interface";
+import { AddressSchema } from "./user-address-model";
+import { AccountLevels } from "../enums/account-levels";
 
 // User Roles (RBAC) - Canonical typed permission catalog
-export type UserRole = "USER" | "ADMIN" | "OPS" | "COMPLIANCE" | "SUPPORT";
 
+export enum ITwoFactorMethodTypes {
+  TOTP = "TOTP",
+  SMS = "SMS"
+}
 
-export type KycStatus = "UNVERIFIED" | "PENDING" | "VERIFIED" | "REJECTED";
-export type ITwoFactorMethodTypes = "TOTP" | "SMS";
-export type MarginCallStatuses = "OPEN" | "RESOLVED" | "LIQUIDATED";
 export type KycDocType = "ID_CARD" | "PASSPORT" | "DRIVING_LICENSE";
 
 
@@ -20,102 +22,8 @@ export interface UserDocument extends IUser, Document {
   generateResetPasswordToken(): string;
 }
 
-export interface INotificationPreferences {
-  email: boolean;
-  sms: boolean;
-  inApp: boolean;
-}
-
-export interface ITwoFactorSchema {
-  isEnabled: boolean;
-  method?: ITwoFactorMethodTypes;
-  backupCodesHash: string;
-}
-
-export interface IMarginCall {
-  isMarginCalled: boolean; // Determines if the user has been margin called
-  marginCalledAt?: Date | null; // The date at which the user potentially has been margin called
-  marginDeficitAmount?: number;
-  marginCallStatus?: MarginCallStatuses;
-  marginCallIds: ObjectId[]; // History links keep small
-  isTradingRestricted: boolean; // Block new orders from being placed when true
-  isWithdrawalRestricted: boolean; // Is the user's withdrawal restricted (cannot place any withdraw orders)
-}
-
-export interface IAddress {
-  line1?: string;
-  line2?: string;
-  city: string;
-  postalCode: string;
-  country: string;
-  countryCode?: string;
-}
-
-export const AddressSchema = new mongoose.Schema<IAddress>({
-  line1: { type: String },
-  line2: { type: String },
-
-  city: {
-    type: String,
-    required: [true, "Please specify the users city"],
-    default: "",
-  },
-
-  postalCode: {
-    type: String,
-    min: [5, "The postal code must have at least 5 characters"],
-    max: [15, "The postal code must not exceed 15 characters"],
-    default: "",
-    required: [true, "Please specify the users postal code"],
-  },
-
-  country: {
-    type: String,
-    default: "",
-    required: [true, "Please specify the users country of residence"],
-  },
-
-  countryCode: {
-    type: String,
-    default: "",
-    required: [
-      true,
-      "Please provide the country code for the country of residence",
-    ],
-  },
-});
-
-export const NotificationPrefsSchema =
-
-  new mongoose.Schema<INotificationPreferences>(
-    {
-      email: { type: Boolean, default: true },
-      sms: { type: Boolean, default: false },
-      inApp: { type: Boolean, default: true },
-    },
-
-    { _id: false }
-  );
-
-export const TwoFactorSchema = new mongoose.Schema({
-  isEnabled: {
-    type: Boolean,
-    default: false,
-  },
-
-  method: {
-    type: String,
-    enum: ["TOTP", "SMS"],
-  },
-
-  backupCodesHash: {
-    type: [String],
-    select: false,
-  }
-
-});
-
 export const UserSchema = new mongoose.Schema<IUser>(
+
   {
 
     accounts: [
@@ -128,30 +36,40 @@ export const UserSchema = new mongoose.Schema<IUser>(
     ],
 
     wallets: [
+
       {
         type: mongoose.Schema.Types.ObjectId,
         ref: "Wallet",
         default: [],
-      },
+      }
+
     ],
 
-    username: {
+    username: { // Username of the User
       type: String,
       required: [true, "Please provide a valid username"],
     },
 
-    email: {
+    email: { // User E-mail Address
       type: String,
       unique: true,
       required: [true, "Please specify a valid e-mail address"],
     },
 
-    password: {
+    emailLower: {
+      type: String,
+      required: false,
+      default: ''
+    },
+
+    password: { // Password of the user
       type: String,
       required: [true, "Please specify a valid password"],
     },
 
-    address: { type: AddressSchema },
+    address: {
+      type: AddressSchema
+    },
 
     dateOfBirth: {
       type: Date,
@@ -198,8 +116,9 @@ export const UserSchema = new mongoose.Schema<IUser>(
 
     accountLevel: {
       type: String,
-      enum: ["BRONZE", "SILVER", "GOLD", "PLATINUM", "DIAMOND"],
-      default: "BRONZE",
+      enum: AccountLevels,
+      default: AccountLevels.Bronze,
+      required: [true, 'Please specify the account level you want to assign this User']
     },
 
     failedLoginAttempts: {
@@ -329,26 +248,6 @@ UserSchema.pre("save", async function (next) {
 
   return next();
 });
-
-// UserSchema.virtual("yieldPositions", {
-//   ref: "YieldPosition",
-//   localField: "_id",
-//   foreignField: "userId",
-// });
-
-// UserSchema.virtual("yieldDeposits", {
-//   ref: "YieldDeposit",
-//   localField: "_id",
-//   foreignField: "userId",
-//   justOne: false,
-// });
-
-// UserSchema.virtual("yieldRedemptions", {
-//   ref: "YieldRedemption",
-//   localField: "_id",
-//   foreignField: "userId",
-//   justOne: false,
-// });
 
 UserSchema.methods.compareLoginPasswords = async function (
   enteredPassword: string
