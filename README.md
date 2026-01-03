@@ -13,6 +13,10 @@ Order Statuses:
 
 Transaction Statuses:
 
+- TradeExecution (Fill)
+- TradeSettlement (Trade has been executed by the system)
+- TradeReversal (in event of errors)
+
 
 Margin Calls Notes / Data Model Fields
 
@@ -56,6 +60,15 @@ Authentication Domain Entity - API Controllers
 - Resend E-mail Verification Async
 - Change Password
 
+Accounts Domain Entity - API Controllers
+
+- 1. Get All Accounts Async
+  2. Get Account By Id Async
+  3. Create New Account Async
+  4. Update Account By ID Async
+  5. Delete All Accounts Async
+  6. Delete Account By Id Async
+
 Wallet Domain Entity - API Controllers
 
 1. Create New Wallet (POST)
@@ -66,3 +79,5 @@ Wallet Domain Entity - API Controllers
 6. Delete All Wallets By ID Async
 7. Freeze Wallet Async
 8. Unfreeze Wallet Async
+
+
