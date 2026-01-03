@@ -16,10 +16,13 @@ const usersData = JSON.parse(fs.readFileSync(usersFilePath, "utf-8"));
 connectDatabaseAsync();
 
 export const importDevDataAsync = async () => {
+  
   try {
     // Remove the data first before importing
     await User.insertMany(usersData);
-  } catch (error) {
+  } 
+  
+  catch (error) {
     if (error) {
       console.log(`Could not insert the data - reason : ${error}`);
     }

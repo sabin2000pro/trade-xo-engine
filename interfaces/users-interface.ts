@@ -1,22 +1,27 @@
+import mongoose from "mongoose";
+import { IAddress, KycStatus, UserRole } from "../models/users-model";
+import { UserStatus } from "../types/user-status";
+import { AccountLevel } from "../types/account-levels";
+
 export interface IUser {
   accounts: mongoose.Schema.Types.ObjectId[]; // The accounts that belong to the specified user
   wallets: mongoose.Schema.Types.ObjectId[]; // The wallets that the user has
   username: string | null; // Username of the user
   email: string | null; // E-mail of the user
   password: string | null; // Password of the user
-  address: IAddress | null;
+  address: IAddress | null; // The address of the user using the trading platform
   profilePicture?: string | null;
   emailLower: string | null;
-  dateOfBirth: Date | null;
+  dateOfBirth: Date | null; // user's date of birth
   lastLoginAt?: Date | null;
   preferredLanguage: string | null;
   timeZone: string;
   lastLoginIpAddress: string; // Helps with Fraud Detection,
   failedLoginAttempts: number;
   loginCount: number;
-  depositsCount: number;
-  tradesCount: number;
-  withdrawalsCount: number;
+  depositsCount: number; // How many deposits the user has placed
+  tradesCount: number; // How many trades the particular user has placed
+  withdrawalsCount: number; // How many withdrawals the user with particular ID has made
   totalDepositAmount: number;
   totalWithdrawalAmount: number;
   openPositionsCount: number;
@@ -45,4 +50,15 @@ export interface IUser {
   marginCallResolvedAt?: Date | null;
   marginDeficitAmount: Number;
   marginCallDeadline: Date;
+}
+
+export interface ICreateUserInterface {
+  username: string
+  email: string
+  password: string
+  address: string
+}
+
+export interface IUpdateUserInterface {
+
 }

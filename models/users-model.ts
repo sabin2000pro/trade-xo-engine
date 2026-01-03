@@ -7,58 +7,7 @@ import { IUser } from "../interfaces/users-interface";
 // User Roles (RBAC) - Canonical typed permission catalog
 export type UserRole = "USER" | "ADMIN" | "OPS" | "COMPLIANCE" | "SUPPORT";
 
-export const USER_PERMISSIONS = [
-  // ===== Authentication =====
-  "auth:register",
-  "auth:login",
-  "auth:logout:self",
-  "auth:logout:any",
-  "auth:refresh",
-  "auth:password:change:self",
-  "auth:password:reset:initiate",
-  "auth:password:reset:complete",
-  "auth:2fa:enable",
-  "auth:2fa:disable",
-  "auth:2fa:enforce:any",
-  "auth:sessions:view:self",
-  "auth:email:verify",
-  "auth:email:resend",
 
-  // ===== User Wallets RBAC =====
-  "view:wallets:self",
-  "adjust:wallets:any",
-  "create:wallets:self",
-  "list:wallets:self",
-  "view:wallets:any",
-  "freeze:wallets:any",
-  "unfreeze:wallets:any",
-  "reconcile:wallets:any",
-  "history:view:wallets:any",
-
-  // ===== User Accounts RBAC =====
-  "view:accounts:self",
-  "view:accounts:any",
-  "create:accounts:self",
-  "edit:accounts:self",
-  "delete:accounts:self",
-
-  // ===== User Deposits RBAC =====
-  "view:deposits:self",
-  "view:deposits:any",
-  "create:deposits:self",
-  "create:deposits:any",
-
-  // ===== User Withdrawals RBAC =====
-
-  // ===== User Trade Orders =====
-  "place:orders",
-  "view:orders:self",
-  "view:orders:any",
-  "cancel:orders:self",
-  "cancel:orders:any",
-
-  // ===== User Transactions RBAC =====
-];
 export type KycStatus = "UNVERIFIED" | "PENDING" | "VERIFIED" | "REJECTED";
 export type ITwoFactorMethodTypes = "TOTP" | "SMS";
 export type MarginCallStatuses = "OPEN" | "RESOLVED" | "LIQUIDATED";
