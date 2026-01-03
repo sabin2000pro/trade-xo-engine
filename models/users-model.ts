@@ -5,9 +5,9 @@ import crypto from "crypto";
 import { IUser } from "../interfaces/users-interface";
 import { AddressSchema } from "./user-address-model";
 import { AccountLevels } from "../enums/account-levels";
-import { KycStatus } from "../enums/user-kyc-statuses";
-import { UserRole } from "../enums/user-roles";
-import { UserStatus } from "../enums/user-status";
+import { KycStatus } from "../enums/users/user-kyc-statuses";
+import { UserRole } from "../enums/users/user-roles";
+import { UserStatus } from "../enums/users/user-status";
 
 
 export interface UserDocument extends IUser, Document {
@@ -186,34 +186,44 @@ export const UserSchema = new mongoose.Schema<IUser>(
       default: false,
     },
 
-    updatedAt: {
-      type: Date,
-      default: Date.now,
-    },
-
-    deletedAt: {
-      type: Date,
-      default: Date.now
-    },
-
-    isTradingEnabled: {
-      type: Boolean,
-      default: false,
-    },
-
-    isMarginCalled: {
-      type: Boolean,
-      default: false,
-    },
-
     isDepositsAllowed: {
       type: Boolean,
       default: false,
     },
 
-    isAccountLocked: {
+    isNotificationsMuted: {
+      type: Boolean,
+      default: false
+     },
+
+     isTradingEnabled: {
       type: Boolean,
       default: false,
+    },
+
+    isTermsAccepted: {
+      type: Boolean,
+      default: false
+   },
+
+   isSuspiciousFlagged: {
+    type: Boolean,
+    default: false
+   },
+
+  isAccountLocked: {
+    type: Boolean,
+    default: false,
+  },
+
+    updatedAt: {
+      type: Date,
+      default: null
+    },
+
+    deletedAt: {
+      type: Date,
+      default: null
     },
 
     isProfileComplete: {
@@ -221,53 +231,10 @@ export const UserSchema = new mongoose.Schema<IUser>(
       default: false,
     },
 
-    marginDeficitAmount: {
-      type: Number,
-      default: 0,
-    },
-
-    marginCallDeadline: {
-      type: Date,
-      default: null,
-    },
-
-    marginCallResolvedAt: {
-      type: Date,
-      default: Date.now,
-    },
-
-    isMarginCallResolved: {
-      type: Boolean,
-      default: false,
-      required: false
-    },
-
-    marginCalledAt: {
-      type: Date,
-      default: Date.now,
-    },
-
-    isNotificationsMuted: {
-        type: Boolean,
-        default: false
-    },
-
-    isSuspiciousFlagged: {
-        type: Boolean,
-        default: false
-    },
-
-    isTermsAccepted: {
-       type: Boolean,
-       default: false
-    },
-
     emailVerifiedAt: {
       type: Date,
-      default: Date.now
-    },
-
-
+      default: null
+    }
 
   },
 
@@ -305,10 +272,6 @@ UserSchema.methods.compareLoginPasswords = async function (
 ): Promise<Boolean> {
   return await bcrypt.compare(this.password, enteredPassword);
 };
-
-UserSchema.methods.generateAuthToken = function () {};
-
-UserSchema.methods.generateResetPasswordToken = function () {};
 
 const User = mongoose.model("User", UserSchema);
 export default User;

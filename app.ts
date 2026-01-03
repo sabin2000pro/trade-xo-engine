@@ -29,11 +29,13 @@ app.use(limiter);
 app.use(hpp());
 
 app.use(morgan("dev"));
+
 app.use(
   cors({
     origin: "*",
     methods: ["PUT", "POST", "GET", "DELETE", "PATCH"],
   })
+
 );
 
 app.set("trust proxy", 1);
@@ -41,14 +43,13 @@ app.set("trust proxy", 1);
 app.use(helmet());
 
 app.get("/", (request: Request, response: Response, next: NextFunction) => {
-  return response
-    .status(200)
-    .json({ success: true, message: "Root Route - Trading XO" });
+  return response.status(200).json({ success: true, message: "Root Route - Trading XO" });
 });
 
 const server = app.listen(port, (error) => {
 
   if (!error) {
+    
     return console.log(
       `Trade XO System listening for HTTP requests on port ${port} in mode ${devMode}`
     );

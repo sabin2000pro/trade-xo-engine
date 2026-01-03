@@ -1,15 +1,8 @@
 import { Request, Response, NextFunction } from "express";
 import asyncHandler from "express-async-handler";
 
-export const fetchAllUsersAsync = asyncHandler(
-  async (
-    request: Request,
-    response: Response,
-    next: NextFunction
-  ): Promise<any> => {
-    return response
-      .status(200)
-      .json({ success: true, message: "All Users Here" });
+export const fetchAllUsersAsync = asyncHandler(async (request: Request, response: Response, next: NextFunction ): Promise<any> => {
+    return response.status(200).json({ success: true, message: "All Users Here" });
   }
 );
 

@@ -1,8 +1,8 @@
 import mongoose from "mongoose";
-import { KycStatus } from "../enums/user-kyc-statuses";
-import { UserRole } from "../enums/user-roles";
+import { KycStatus } from "../enums/users/user-kyc-statuses";
+import { UserRole } from "../enums/users/user-roles";
 import { IAddress } from "./address-interface";
-import { UserStatus } from "../enums/user-status";
+import { UserStatus } from "../enums/users/user-status";
 import { AccountLevels } from "../enums/account-levels";
 
 export interface IUser {
@@ -10,6 +10,7 @@ export interface IUser {
   wallets: mongoose.Schema.Types.ObjectId[]; // The wallets that a given user has
   username: string | null; // Username of the user
   email: string | null; // E-mail of the user
+  emailVerifiedAt: Date,
   password: string | null; // Password of the user
   address: IAddress | null; // The address of the user using the trading platform
   profilePicture?: string | null;
@@ -45,11 +46,6 @@ export interface IUser {
   isSuspiciousFlagged: boolean;
   isAccountLocked: boolean;
   isProfileComplete: boolean;
-  emailVerifiedAt?: Date | null;
-  marginCalledAt?: Date | null;
-  marginCallResolvedAt?: Date | null;
-  marginDeficitAmount?: Number;
-  marginCallDeadline?: Date;
 }
 
 export interface ICreateUserInterface {
